@@ -68,8 +68,8 @@ Base.IndexStyle(::Type{OA}) where {OA<:PiecewiseSplicedArray} = IndexStyle(paren
 parenttype(::Type{PiecewiseSplicedArray{T,N,AA}}) where {T,N,AA} = AA
 parenttype(A::PiecewiseSplicedArray) = parenttype(typeof(A))
 
-Base.eachindex(::IndexCartesian, A::PiecewiseSplicedArray) = CartesianIndices(axes(A))
-Base.eachindex(::IndexLinear, A::PiecewiseSplicedArray) = axes(A, 1)
+# Base.eachindex(::IndexCartesian, A::PiecewiseSplicedArray) = CartesianIndices(axes(A))
+# Base.eachindex(::IndexLinear, A::PiecewiseSplicedArray) = axes(A, 1)
 
 # function CartesianIndices(axesranges :: Vararg{<:PiecewiseIncreasingRange,N}) where {N}
 # end
@@ -82,12 +82,24 @@ function Base.getindex(A::PiecewiseSplicedArray{TA,N}, I::Vararg{Int,N}) where {
 	@inbounds A.parent[A.parentinds...]
 end
 
+function Base.getindex(A::PiecewiseSplicedArray, i::Int)
+    checkbounds(A, i)
+    @inbounds ret = parent(A)[i]
+    ret
+end
+
 function Base.setindex!(A::PiecewiseSplicedArray{TA,N},val,I::Vararg{Int,N}) where {TA,N}
 	checkbounds(A, I...)
 	for (dimno,(r,ind)) in enumerate(zip(A.axesranges,I))
 		@inbounds A.parentinds[dimno] = findfirst(isequal(ind),r)
 	end
 	@inbounds A.parent[A.parentinds...] = val
+	val
+end
+
+function Base.setindex!(A::PiecewiseSplicedArray{TA,N},val,i::Int) where {TA,N}
+	checkbounds(A, i)
+	@inbounds A.parent[i] = val
 	val
 end
 
