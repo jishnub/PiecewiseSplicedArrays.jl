@@ -1,34 +1,33 @@
 module PiecewiseSplicedArrays
-using PiecewiseIncreasingRanges,StaticArrays
+using PiecewiseIncreasingRanges
 export PiecewiseSplicedArray
 
 struct PiecewiseSplicedArray{TA,N,AA<:AbstractArray} <: AbstractArray{TA,N}
     parent::AA
-    axesranges::Tuple{Vararg{<:PiecewiseIncreasingRange,N}}
-    parentinds::MVector{N,Int64}
-    function PiecewiseSplicedArray{T,N,AA}(a::AA,axesranges,parentinds) where {T,N,AA<:AbstractArray{T,N}}
+    axesranges::NTuple{N,PiecewiseIncreasingRange{Int64,<:AbstractUnitRange{Int64},Nothing}}
+    function PiecewiseSplicedArray{T,N,AA}(a::AA,axesranges) where {T,N,AA<:AbstractArray{T,N}}
     	checknumberofinds(a,axesranges)
-    	new{T,N,AA}(a,axesranges,parentinds)
+    	new{T,N,AA}(a,axesranges)
     end
 end
 
 function PiecewiseSplicedArray(a::AbstractVector{TA},axesranges::PiecewiseIncreasingRange) where {TA}
-	PiecewiseSplicedArray{TA,1,typeof(a)}(a,(axesranges,),MVector{1,Int64}(zeros(Int64,1)))
+	PiecewiseSplicedArray{TA,1,typeof(a)}(a,(axesranges,))
 end
 
 function PiecewiseSplicedArray(a::AbstractVector{TA},axesranges::Vararg{<:AbstractUnitRange}) where {TA}
 	ax = PiecewiseIncreasingRange([axesranges...])
-	PiecewiseSplicedArray{TA,1,typeof(a)}(a,(ax,),MVector{1,Int64}(zeros(Int64,1)))
+	PiecewiseSplicedArray{TA,1,typeof(a)}(a,(ax,))
 end
 
 function PiecewiseSplicedArray(a::AbstractArray{TA,N},axesranges::Vararg{<:PiecewiseIncreasingRange,N}) where {TA,N}
-	PiecewiseSplicedArray{TA,N,typeof(a)}(a,axesranges,MVector{N,Int64}(zeros(Int64,N)))
+	PiecewiseSplicedArray{TA,N,typeof(a)}(a,axesranges)
 end
 
 function PiecewiseSplicedArray(a::AbstractArray{TA,N},axesranges) where {TA,N}
 	checknumberofdims(a,axesranges)
 	axesranges = Tuple(PiecewiseIncreasingRange.(axesranges))
-	PiecewiseSplicedArray{TA,N,typeof(a)}(a,axesranges,MVector{N,Int64}(zeros(Int64,N)))
+	PiecewiseSplicedArray{TA,N,typeof(a)}(a,axesranges)
 end
 
 struct ArraySizeMismatch{T1,T2,T3} <: Exception
@@ -68,12 +67,15 @@ Base.IndexStyle(::Type{OA}) where {OA<:PiecewiseSplicedArray} = IndexStyle(paren
 parenttype(::Type{PiecewiseSplicedArray{T,N,AA}}) where {T,N,AA} = AA
 parenttype(A::PiecewiseSplicedArray) = parenttype(typeof(A))
 
+parentinds(::Tuple{},::Tuple{}) = ()
+function parentinds(ax::NTuple{N,<:PiecewiseIncreasingRange},inds::NTuple{N,Int}) where {N}
+	(searchsortedfirst(ax[1],inds[1]),parentinds(Base.tail(ax),Base.tail(inds))...)
+end
+parentinds(a::PiecewiseSplicedArray{TA,N},inds::NTuple{N,Int}) where {TA,N} = parentinds(a.axesranges,inds)
+
 function Base.getindex(A::PiecewiseSplicedArray{TA,N}, I::Vararg{Int,N}) where {TA,N}
 	checkbounds(A, I...)
-	for dim=1:N
-		@inbounds A.parentinds[dim] = searchsortedfirst(A.axesranges[dim],I[dim])
-	end
-	@inbounds A.parent[A.parentinds...]
+	@inbounds A.parent[parentinds(A.axesranges,I)...]
 end
 
 function Base.getindex(A::PiecewiseSplicedArray, i::Int)
@@ -84,10 +86,7 @@ end
 
 function Base.setindex!(A::PiecewiseSplicedArray{TA,N},val,I::Vararg{Int,N}) where {TA,N}
 	checkbounds(A, I...)
-	for dim=1:N
-		@inbounds A.parentinds[dim] = searchsortedfirst(A.axesranges[dim],I[dim])
-	end
-	@inbounds A.parent[A.parentinds...] = val
+	@inbounds A.parent[parentinds(A.axesranges,I)...] = val
 	val
 end
 
