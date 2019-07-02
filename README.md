@@ -1,4 +1,6 @@
 # PiecewiseSplicedArrays.jl
+[![Build Status](https://travis-ci.org/jishnub/PiecewiseSplicedArrays.jl.svg?branch=master)](https://travis-ci.org/jishnub/PiecewiseSplicedArrays.jl)
+
 Arrays with discontinuous ranges as indices. 
 Currently getting and setting indices are supported.
 
