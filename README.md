@@ -4,7 +4,7 @@
 Arrays with discontinuous ranges as indices. 
 Currently getting and setting indices are supported.
 
-```
+```julia
 julia> psa=PiecewiseSplicedArray(zeros(5,5),([1:3,6:7],[1:4,7:7]))
 PiecewiseSplicedArray{Float64,2,Array{Float64,2}} with indices [1, 2, 3, 6, 7]×[1, 2, 3, 4, 7]:
  0.0  0.0  0.0  0.0  0.0
@@ -20,10 +20,10 @@ PiecewiseSplicedArray{Float64,2,Array{Float64,2}} with indices [1, 2, 3, 6, 7]×
 `eachindex` uses linear indexing based on the parent array
 
 
-```
+```julia
  julia> for i in eachindex(psa)
-       psa[i]=i
-       end
+       	  psa[i]=i
+       	end
 
 julia> psa
 PiecewiseSplicedArray{Float64,2,Array{Float64,2}} with indices [1, 2, 3, 6, 7]×[1, 2, 3, 4, 7]:
@@ -36,7 +36,7 @@ PiecewiseSplicedArray{Float64,2,Array{Float64,2}} with indices [1, 2, 3, 6, 7]×
 
 Can get and set indices linearly as well as using Cartesian index notation
 
-```
+```julia
 julia> psa[19]
 19.0
 
@@ -54,7 +54,7 @@ Note that `CartesianIndices` are not supported at the moment.
 
 The arrays are not as performant as `OffsetArrays`, so do not use these for performance-critical applications
 
-```
+```julia
 julia> using BenchmarkTools
 
 julia> using OffsetArrays
