@@ -47,7 +47,7 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[PiecewiseIncreasingRanges]]
 deps = ["Compat"]
-git-tree-sha1 = "2cce95121274a773c4c7c7bf09aa0fe3465b527e"
+git-tree-sha1 = "026e380c3551f92e0f8a23bdefe9687b44cbed5c"
 repo-rev = "dev"
 repo-url = "https://github.com/jishnub/PiecewiseIncreasingRanges.jl.git"
 uuid = "efdf428f-f294-58b6-a961-90c8051bff4c"
