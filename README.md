@@ -51,7 +51,7 @@ julia> psa[7]
 
 Note that `CartesianIndices` are not supported at the moment.
 
-The arrays are not as performant as standard `Array`s or `OffsetArray`s, so do not use these for performance-critical applications. There is a performance penalty of aroung 8-10x.
+The arrays are not as performant as standard `Array`s or `OffsetArray`s, so do not use these for performance-critical applications. There is a performance penalty of around 8-10x.
 
 ```julia
 julia> using BenchmarkTools
