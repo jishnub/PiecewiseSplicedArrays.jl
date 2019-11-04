@@ -1,8 +1,8 @@
 using Test,PiecewiseSplicedArrays,PiecewiseIncreasingRanges
 
 @testset "initialization and indexing" begin
-	ax = PiecewiseIncreasingRange([1:3,6:7]);
-	a = zeros(5,5)
+	ax = PiecewiseUnitRange([1:3,6:7]);
+	a = zeros(5,5);
 	psa = PiecewiseSplicedArray(a,ax,ax);
 	@test parent(psa) === a
 	for i in eachindex(psa)
@@ -17,7 +17,7 @@ using Test,PiecewiseSplicedArrays,PiecewiseIncreasingRanges
 end
 
 @testset "size and axes" begin
-	ax = PiecewiseIncreasingRange([1:3,6:7]);
+	ax = PiecewiseUnitRange([1:3,6:7]);
 	psa = PiecewiseSplicedArray(zeros(5,5),ax,ax);
 	for d in 1:ndims(psa)
 		@test axes(psa,d)==ax

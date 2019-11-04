@@ -1,12 +1,11 @@
 # PiecewiseSplicedArrays.jl
 [![Build Status](https://travis-ci.org/jishnub/PiecewiseSplicedArrays.jl.svg?branch=master)](https://travis-ci.org/jishnub/PiecewiseSplicedArrays.jl)
 
-Arrays with discontinuous ranges as indices. 
-Currently getting and setting indices are supported.
+Arrays with discontinuous ranges as indices. As of now only `AbstractUnitRange`s are allowed as axes, but more ranges might be allowed in the future. Getting and setting indices are supported.
 
 ```julia
 julia> psa=PiecewiseSplicedArray(zeros(5,5),([1:3,6:7],[1:4,7:7]))
-PiecewiseSplicedArray{Float64,2,Array{Float64,2}} with indices [1, 2, 3, 6, 7]×[1, 2, 3, 4, 7]:
+5×5 PiecewiseSplicedArray{Float64,2,Array{Float64,2},UnitRange{Int64}} with indices [1, 2, 3, 6, 7]×[1, 2, 3, 4, 7]:
  0.0  0.0  0.0  0.0  0.0
  0.0  0.0  0.0  0.0  0.0
  0.0  0.0  0.0  0.0  0.0
@@ -26,7 +25,7 @@ PiecewiseSplicedArray{Float64,2,Array{Float64,2}} with indices [1, 2, 3, 6, 7]×
        	end
 
 julia> psa
-PiecewiseSplicedArray{Float64,2,Array{Float64,2}} with indices [1, 2, 3, 6, 7]×[1, 2, 3, 4, 7]:
+5×5 PiecewiseSplicedArray{Float64,2,Array{Float64,2},UnitRange{Int64}} with indices [1, 2, 3, 6, 7]×[1, 2, 3, 4, 7]:
  1.0   6.0  11.0  16.0  21.0
  2.0   7.0  12.0  17.0  22.0
  3.0   8.0  13.0  18.0  23.0
@@ -52,18 +51,21 @@ julia> psa[7]
 
 Note that `CartesianIndices` are not supported at the moment.
 
-The arrays are not as performant as `OffsetArrays`, so do not use these for performance-critical applications
+The arrays are not as performant as standard `Array`s or `OffsetArray`s, so do not use these for performance-critical applications. There is a performance penalty of aroung 8-10x.
 
 ```julia
 julia> using BenchmarkTools
 
-julia> using OffsetArrays
+julia> a=zeros(5,5);
 
-julia> a=zeros(1:5,1:5);
+julia> @btime $a[3,3]; # Array
+  3.197 ns (0 allocations: 0 bytes)
 
-julia> @btime a[3,3];
-  17.319 ns (1 allocation: 16 bytes)
+julia> using OffsetArrays; a=zeros(1:5,1:5);
 
-julia> @btime psa[3,3];
-  102.784 ns (4 allocations: 112 bytes)
+julia> @btime $a[3,3]; # OffsetArray
+  7.673 ns (0 allocations: 0 bytes)
+
+julia> @btime $psa[3,3]; # PiecewiseSplicedArray
+  33.578 ns (0 allocations: 0 bytes)
 ```
