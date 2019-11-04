@@ -1,5 +1,5 @@
 # PiecewiseSplicedArrays.jl
-[![Build Status](https://travis-ci.org/jishnub/PiecewiseSplicedArrays.jl.svg?branch=master)](https://travis-ci.org/jishnub/PiecewiseSplicedArrays.jl)
+[![Build Status](https://travis-ci.com/jishnub/PiecewiseSplicedArrays.jl.svg?branch=master)](https://travis-ci.com/jishnub/PiecewiseSplicedArrays.jl)
 
 Arrays with discontinuous ranges as indices. As of now only `AbstractUnitRange`s are allowed as axes, but more ranges might be allowed in the future. Getting and setting indices are supported.
 

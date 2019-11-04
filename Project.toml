@@ -1,6 +1,5 @@
 name = "PiecewiseSplicedArrays"
 uuid = "03528e14-9712-11e9-0cf3-01904f033ff3"
-authors = ["Jishnu Bhattacharya <jishnuonline@gmail.com>"]
 version = "0.1.0"
 
 [deps]
